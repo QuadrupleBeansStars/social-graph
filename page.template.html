@@ -1,0 +1,172 @@
+<title>Pantip Coffee Pulse</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans+Thai:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; charts full width; network gets a tall panel with period chips */
+:root{
+  --bg:#f6f3ef; --surface:#fffdfa; --fg:#2a1f18; --muted:#7a6b5f; --line:#e4dcd3;
+  --accent:#a0522d; --sb:#1e6b52; --am:#8a5a2b; --se:#d0622a; --pt:#b08a1e; --cn:#c0304a;
+  --c0:#6b7fa8; --c1:#c0304a; --c2:#8a5a2b; --c3:#2f8f6a; --c4:#1e6b52; --c5:#9a6bb0;
+  --display:"Bricolage Grotesque",system-ui,sans-serif; --body:"IBM Plex Sans Thai",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1512;--surface:#231c18;--fg:#efe6dd;--muted:#a8998c;--line:#3a302a;--accent:#e08a5c;--sb:#4fbf96;--am:#d6a26a;--se:#f08a50;--pt:#e0c060;--cn:#f0708a;--c0:#93a6d0;--c1:#f0708a;--c2:#d6a26a;--c3:#5cc59a;--c4:#4fbf96;--c5:#c49ad8;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1a1512;--surface:#231c18;--fg:#efe6dd;--muted:#a8998c;--line:#3a302a;--accent:#e08a5c;--sb:#4fbf96;--am:#d6a26a;--se:#f08a50;--pt:#e0c060;--cn:#f0708a;--c0:#93a6d0;--c1:#f0708a;--c2:#d6a26a;--c3:#5cc59a;--c4:#4fbf96;--c5:#c49ad8;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.6}
+.wrap{max-width:980px;margin:0 auto;padding-block:40px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:44px}
+h1,h2{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(30px,5vw,46px)} h2{font-size:22px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.lede{max-width:66ch;color:var(--muted);margin:10px 0 0}
+section{display:grid;gap:14px;min-width:0}
+section>p{margin:0;max-width:68ch}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0;overflow:hidden}
+.stats{display:flex;flex-wrap:wrap;gap:28px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.stats b{display:block;font-family:var(--display);font-size:28px;color:var(--fg);font-variant-numeric:tabular-nums}
+svg text{fill:var(--muted);font-family:var(--mono);font-size:11px}
+.axis line,.axis path{stroke:var(--line)} .grid line{stroke:var(--line);stroke-dasharray:2 3}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:3px;border-radius:2px;display:inline-block}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:500 12px var(--mono);padding:6px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chips button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#net{height:560px;padding:0;position:relative}
+#net svg{width:100%;height:100%;display:block;cursor:grab}
+#net .hint{position:absolute;left:12px;bottom:8px;font:12px var(--mono);color:var(--muted)}
+.node text{font-family:var(--body);fill:var(--fg)} .node.brand text{font-weight:600}
+.findings{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.find{border-top:2px solid var(--fg);padding-top:10px;min-width:0}
+.find h3{font:700 16px var(--display);margin:0 0 6px}
+.find p{margin:0;font-size:14px}
+.find .act{margin-top:8px;font-size:13px;color:var(--accent);font-weight:600}
+table{border-collapse:collapse;width:100%;font-size:13px}
+td,th{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font:500 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.tbl{overflow-x:auto}
+.sm{padding-block:10px;border-bottom:1px solid var(--line)} .sm:last-child{border-bottom:0}
+.smh{display:flex;justify-content:space-between;gap:12px;font-size:14px} .smh span{font:12px var(--mono);color:var(--muted)}
+.smp{font-size:12px;color:var(--muted);overflow-wrap:anywhere} .smp a{color:var(--fg)}
+.note{font-size:13px;color:var(--muted);max-width:72ch}
+.note li{margin-bottom:4px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Social listening · Pantip · Thai coffee chains</div>
+  <h1>What Pantip says about Thai coffee chains, Nov 2025 – Nov 2026</h1>
+  <p class="lede">Threads tagged with coffee, café, drinks, tea and franchise topics on Pantip, plus every comment under them. Brand mentions are tracked over time, and words that appear in the same post are linked into a network that shows how the conversation is organized.</p>
+  <div class="stats" style="margin-top:18px" id="stats"></div>
+</header>
+
+<section>
+  <div class="eyebrow">1 · Over time</div>
+  <h2>Starbucks peaked once, in May. Cheap chains are rising.</h2>
+  <p>Each row is one brand: posts and comments that name it, by month, all on the same scale. The darkest bar is the brand's busiest month, and the thread that caused it is linked below the row.</p>
+  <div class="panel" id="line"></div>
+</section>
+
+<section>
+  <div class="eyebrow">2 · How topics connect</div>
+  <h2>The network of words that appear together</h2>
+  <p>Each dot is a word or a brand (★). Lines join words used in the same post, and thicker lines mean they appear together more often. Colors are clusters that a community-detection algorithm (Louvain) found automatically. Pick a period to see how the network changes.</p>
+  <div class="chips" id="chips" role="group" aria-label="Period"></div>
+  <div class="panel" id="net"><div class="hint">drag nodes · hover to highlight</div></div>
+</section>
+
+<section>
+  <div class="eyebrow">3 · What each brand is associated with</div>
+  <h2>Words that show up more often next to each brand</h2>
+  <p>Lift is how many times more often the word appears in posts that name the brand than in the dataset as a whole.</p>
+  <div class="panel tbl"><table id="assoc"></table></div>
+</section>
+
+<section>
+  <div class="eyebrow">4 · So what</div>
+  <h2>Business takeaways</h2>
+  <div class="findings">
+    <div class="find"><h3>Starbucks is talked about for price, not taste</h3><p>In the network, Starbucks sits in the cluster with <em>ราคา</em> (price), <em>แพง</em> (expensive), <em>แบรนด์</em> (brand), <em>สาขา</em> (branch) and <em>ลูกค้า</em> (customer). Its one big spike was the May 2026 launch of “Es Yen”, priced under 100 baht to compete with local chains.</p><div class="act">→ Value pricing is what gets Starbucks noticed. Measure how many people trade down, not only how many people mention it.</div></div>
+    <div class="find"><h3>Café Amazon is talked about for its drinks</h3><p>Café Amazon sits with <em>กาแฟ</em> (coffee), <em>แก้ว</em> (cup), <em>นม</em> (milk), <em>หวาน</em> (sweet) and <em>ชง</em> (brew). Other threads are about its sales record (455 million cups, OR's quarterly results) and collaborations such as the Dek Somboon soy-caramel drink.</p><div class="act">→ Collaborations get people talking. Sweetness is a recurring point to watch.</div></div>
+    <div class="find"><h3>Convenience coffee is gaining attention</h3><p>Mentions of 7-Eleven / All Café rose steadily from Sep to Nov. Mixue and other Chinese chains appear mainly in threads about the market being saturated and branches closing.</p><div class="act">→ For a premium chain, the competition is the ฿40 cup at 7-Eleven. Track it every month.</div></div>
+    <div class="find"><h3>Most posts are about home brewing and cost</h3><p>One of the most discussed threads asked what the 53 baht goes to when a 60-baht latte only uses about 7 baht of coffee. Home espresso machines and roast level (light, medium or dark) form their own large cluster.</p><div class="act">→ Pantip users are cost-conscious. Content that is open about pricing could work well here.</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Method &amp; limits</div>
+  <ul class="note">
+    <li><b>Source:</b> the 50 most recent threads for each of 10 Pantip tags, plus all comments under them. Pantip tag pages only show the latest 50 threads, so recent months have more data than older ones. The rise in Oct–Nov overall volume is partly caused by this.</li>
+    <li><b>Brands:</b> a post counts as mentioning a brand when it contains a Thai or English spelling of the name. Inthanin, Black Canyon and True Coffee came up too rarely to chart.</li>
+    <li><b>Network:</b> Thai words were split with PyThaiNLP (newmm), filler words were removed, and the most frequent words were kept. Two words are linked when they appear in the same post at least 2 times in the period (4 times for "All months").</li>
+    <li><b>Sentiment:</b> I tried a simple word-list method, and it labeled about 85% of posts neutral, so it isn't shown here. Real sentiment needs a Thai model, for example one trained on the Wisesight corpus.</li>
+  </ul>
+</section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const D = __DATA__;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const BC = {"Starbucks":"--sb","Café Amazon":"--am","7-Eleven / All Café":"--se","Punthai":"--pt","Mixue / Chinese chains":"--cn"};
+const fmtM = m => { const [y,mo]=m.split("-"); return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+mo-1]+" ’"+y.slice(2); };
+
+document.getElementById("stats").innerHTML =
+  `<div><b>${D.n_threads.toLocaleString()}</b>threads</div><div><b>${D.n_rows.toLocaleString()}</b>posts + comments</div><div><b>${D.months.length}</b>months</div><div><b>${Object.keys(D.brands).length}</b>brands tracked</div>`;
+
+function drawLine(){
+  const el=document.getElementById("line"); el.innerHTML="";
+  const series=Object.entries(D.brands).map(([b,v])=>({b,vals:D.months.map(mm=>v[mm].reduce((a,c)=>a+c,0))})).sort((p,q)=>d3.sum(q.vals)-d3.sum(p.vals));
+  const max=d3.max(series,s=>d3.max(s.vals));
+  series.forEach(s=>{
+    const row=document.createElement("div"); row.className="sm"; el.append(row);
+    const pk=D.peak[s.b]||{}; const tot=d3.sum(s.vals);
+    row.innerHTML=`<div class="smh"><b style="color:var(${BC[s.b]})">${s.b}</b><span>${tot} mentions</span></div>`;
+    const W=row.clientWidth||900,H=96,m={t:18,r:6,b:18,l:6};
+    const svg=d3.select(row).append("svg").attr("viewBox",`0 0 ${W} ${H}`).attr("width","100%");
+    const x=d3.scaleBand(D.months,[m.l,W-m.r]).padding(.18), y=d3.scaleLinear([0,max],[H-m.b,m.t]);
+    svg.append("line").attr("x1",m.l).attr("x2",W-m.r).attr("y1",H-m.b).attr("y2",H-m.b).attr("stroke",css("--line"));
+    svg.selectAll(null).data(s.vals).join("rect").attr("x",(d,i)=>x(D.months[i])).attr("width",x.bandwidth()).attr("y",d=>y(d)).attr("height",d=>H-m.b-y(d))
+      .attr("rx",2).attr("fill",css(BC[s.b])).attr("fill-opacity",(d,i)=>D.months[i]===pk.m?1:.45).append("title").text((d,i)=>`${fmtM(D.months[i])}: ${d}`);
+    svg.selectAll(null).data(s.vals).join("text").filter(d=>d>0).attr("x",(d,i)=>x(D.months[i])+x.bandwidth()/2).attr("y",d=>y(d)-4).attr("text-anchor","middle").text(d=>d);
+    const step=W<560?3:1;
+    svg.selectAll(null).data(D.months).join("text").filter((d,i)=>i%step===0).attr("x",d=>x(d)+x.bandwidth()/2).attr("y",H-4).attr("text-anchor","middle").text(fmtM);
+    if(pk.title){const p=document.createElement("div");p.className="smp";p.innerHTML=`Peak ${fmtM(pk.m)} · <a href="https://pantip.com/topic/${pk.tid}" target="_blank" rel="noopener">${pk.title}…</a>`;row.append(p);}
+  });
+}
+
+let sim;
+function drawNet(key){
+  const el=document.getElementById("net"); d3.select(el).select("svg").remove(); if(sim) sim.stop();
+  const g0=D.graphs[key]; const W=el.clientWidth,H=el.clientHeight;
+  const nodes=g0.nodes.map(d=>({...d})), links=g0.links.map(d=>({...d}));
+  const svg=d3.select(el).insert("svg",".hint").attr("viewBox",`0 0 ${W} ${H}`);
+  const r=d3.scaleSqrt([0,d3.max(nodes,d=>d.n)],[3,W<560?16:24]);
+  const lw=d3.scaleLinear([0,d3.max(links,d=>d.w)],[.4,6]);
+  const col=c=>css("--c"+(c%6));
+  const L=svg.append("g").selectAll("line").data(links).join("line").attr("stroke",css("--muted")).attr("stroke-opacity",.22).attr("stroke-width",d=>lw(d.w));
+  const N=svg.append("g").selectAll("g").data(nodes).join("g").attr("class",d=>"node"+(d.brand?" brand":""));
+  N.append("circle").attr("r",d=>r(d.n)).attr("fill",d=>col(d.c)).attr("fill-opacity",d=>d.brand?1:.8).attr("stroke",d=>d.brand?css("--fg"):"none").attr("stroke-width",2);
+  N.append("text").text(d=>d.brand?"★ "+d.id.slice(1):d.id).attr("x",d=>r(d.n)+3).attr("y",4).style("font-size",d=>d.brand?"13px":"12px");
+  N.append("title").text(d=>`${d.id.replace("#","")} — ${d.n} posts`);
+  const adj=new Set(links.map(l=>l.source+"|"+l.target));
+  N.on("mouseenter",(e,d)=>{N.style("opacity",o=>o===d||adj.has(d.id+"|"+o.id)||adj.has(o.id+"|"+d.id)?1:.15);L.attr("stroke-opacity",l=>l.source===d||l.target===d?.7:.04);})
+   .on("mouseleave",()=>{N.style("opacity",1);L.attr("stroke-opacity",.22);});
+  N.call(d3.drag().on("start",(e,d)=>{if(!e.active)sim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y;}).on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;}).on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=d.fy=null;}));
+  sim=d3.forceSimulation(nodes).force("link",d3.forceLink(links).id(d=>d.id).strength(l=>.02+.4*l.w/d3.max(links,k=>k.w)))
+    .force("charge",d3.forceManyBody().strength(-160)).force("center",d3.forceCenter(W/2,H/2)).force("collide",d3.forceCollide(d=>r(d.n)+10))
+    .force("x",d3.forceX(W/2).strength(.05)).force("y",d3.forceY(H/2).strength(.07))
+    .on("tick",()=>{nodes.forEach(d=>{d.x=Math.max(20,Math.min(W-70,d.x));d.y=Math.max(16,Math.min(H-24,d.y));});
+      L.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);N.attr("transform",d=>`translate(${d.x},${d.y})`);});
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){sim.stop();for(let i=0;i<300;i++)sim.tick();sim.on("tick")();}
+}
+const chips=document.getElementById("chips"); let cur="All";
+Object.keys(D.graphs).forEach(k=>{const b=document.createElement("button");b.id="p-"+k.replace(/\W+/g,"");b.textContent=k==="All"?"All months":k.split(" → ").map(fmtM).filter((v,i,a)=>a.indexOf(v)===i).join(" – ");b.setAttribute("aria-pressed",k===cur);b.onclick=()=>{cur=k;chips.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));drawNet(k);};chips.append(b);});
+
+document.getElementById("assoc").innerHTML="<tr><th>Brand</th><th>Top associated words (lift ×)</th></tr>"+
+  Object.entries(D.assoc).map(([b,a])=>`<tr><td style="white-space:nowrap"><b>${b}</b></td><td>${a.map(([t,n,l])=>`${t} <span style="color:var(--muted);font-family:var(--mono);font-size:11px">${l}</span>`).join(" · ")}</td></tr>`).join("");
+
+drawLine(); drawNet(cur);
+let rt; addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{drawLine();drawNet(cur);},200);});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{drawLine();drawNet(cur);});
+</script>
