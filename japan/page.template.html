@@ -1,0 +1,195 @@
+<title>Pantip Japan Seasons</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=IBM+Plex+Sans+Thai:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column; each section = claim headline, one chart, one-line caveat */
+:root{
+  --bg:#f3f4f7; --surface:#ffffff; --fg:#1b2033; --muted:#636a80; --line:#dde0e8;
+  --ink:#2b3a67; --ai:#3d5a99; --beni:#c8463d; --sakura:#d9849b; --matsu:#3f7a5a; --kin:#b8892b;
+  --hm0:#eef0f5; --hm1:#2b3a67;
+  --s-winter:#3d6fb0; --s-spring:#d9849b; --s-summer:#3f9a6a; --s-autumn:#c8663d;
+  --display:"Zen Kaku Gothic New",system-ui,sans-serif; --body:"IBM Plex Sans Thai",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151d;--surface:#1b1e29;--fg:#e8eaf2;--muted:#9aa0b5;--line:#2c3040;--ink:#8fa6e0;--ai:#8fa6e0;--beni:#ef7a6f;--sakura:#f0a3b8;--matsu:#6cc495;--kin:#e0b860;--hm0:#1f2331;--hm1:#9fb4f0;--s-winter:#7aa6e8;--s-spring:#f0a3b8;--s-summer:#6cc495;--s-autumn:#ef9a6f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13151d;--surface:#1b1e29;--fg:#e8eaf2;--muted:#9aa0b5;--line:#2c3040;--ink:#8fa6e0;--ai:#8fa6e0;--beni:#ef7a6f;--sakura:#f0a3b8;--matsu:#6cc495;--kin:#e0b860;--hm0:#1f2331;--hm1:#9fb4f0;--s-winter:#7aa6e8;--s-spring:#f0a3b8;--s-summer:#6cc495;--s-autumn:#ef9a6f;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.6}
+.wrap{max-width:980px;margin:0 auto;padding-block:40px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:44px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:clamp(28px,5vw,44px)} h2{font-size:22px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--beni)}
+.lede{max-width:66ch;color:var(--muted);margin:10px 0 0}
+section{display:grid;gap:14px;min-width:0}
+section>p{margin:0;max-width:68ch}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0;overflow:hidden}
+.stats{display:flex;flex-wrap:wrap;gap:28px;font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:18px}
+.stats b{display:block;font-family:var(--display);font-size:28px;color:var(--fg);font-variant-numeric:tabular-nums}
+svg text{fill:var(--muted);font-family:var(--mono);font-size:11px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;margin-bottom:6px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:2px;display:inline-block}
+.legend i.ln{height:3px}
+.callout{font-size:13px;color:var(--muted);border-left:3px solid var(--kin);padding-left:10px;max-width:72ch}
+.tbl{overflow-x:auto}
+table.hm{border-collapse:separate;border-spacing:3px;font-size:13px;min-width:460px;width:100%}
+.hm th{font:500 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:center;padding:4px}
+.hm th.rl{text-align:left}
+.hm td{text-align:center;border-radius:4px;padding:6px 4px;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12px}
+.hm td.rl{text-align:left;font-family:var(--body);font-size:13px;white-space:nowrap;padding-right:10px}
+.hm td.n{color:var(--muted);font-size:11px}
+.two{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.two>*{min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:500 12px var(--mono);padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.chips button i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.chips button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chips button:focus-visible{outline:2px solid var(--beni);outline-offset:2px}
+#net{height:580px;padding:0;position:relative}
+#net svg{width:100%;height:100%;display:block}
+#net .hint{position:absolute;left:12px;bottom:8px;font:12px var(--mono);color:var(--muted)}
+.node text{font-family:var(--body);fill:var(--fg)}
+.findings{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.find{border-top:2px solid var(--fg);padding-top:10px;min-width:0}
+.find h3{font-size:16px;margin:0 0 6px}
+.find p{margin:0;font-size:14px}
+.find .act{margin-top:8px;font-size:13px;color:var(--beni);font-weight:600}
+.note{font-size:13px;color:var(--muted);max-width:72ch;margin:0;padding-left:18px}
+.note li{margin-bottom:4px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Social listening · Pantip · Thai travellers to Japan</div>
+  <h1>What Thai travellers talk about on Pantip, season by season</h1>
+  <p class="lede">Japan travel threads and their comments on Pantip from January 2025 to November 2026, compared with official monthly counts of Thai visitors from the Japan National Tourism Organization (JNTO).</p>
+  <div class="stats" id="stats"></div>
+</header>
+
+<section>
+  <div class="eyebrow">1 · Pantip vs. actual trips</div>
+  <h2>Thai visits peak three times a year. Pantip posts don't follow that pattern.</h2>
+  <p>The bars show Thai visitors to Japan each month, according to JNTO. They peak in March–April (sakura season and the Songkran holiday), in October and in December (autumn leaves and New Year), and are lowest in August. The line shows Pantip posts and comments.</p>
+  <div class="panel"><div class="legend" id="lg1"></div><div id="c1"></div></div>
+  <p class="callout" id="lagnote"></p>
+</section>
+
+<section>
+  <div class="eyebrow">2 · Which places in which season</div>
+  <h2>Hokkaido is talked about in winter, Tokyo in summer, and Osaka and Kyoto in autumn</h2>
+  <p>Each post is assigned to the season of the trip if the title names a month, and to the season it was posted otherwise. Each cell compares how often a place or topic is mentioned in that season with how often it's mentioned overall. 1.0× is average, and darker cells mean the season is above average for it. Only months with full data are used (Jan 2025 – Sep 2026).</p>
+  <div class="two">
+    <div class="panel tbl"><table class="hm" id="hmP"></table></div>
+    <div class="panel tbl"><table class="hm" id="hmT"></table></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">3 · How the conversation connects</div>
+  <h2>The network of places, topics and words used together, by season</h2>
+  <p>■ squares are places, ◆ diamonds are topics, and dots are common words. Two of them are linked when they appear in the same post, and colors show clusters that the Louvain algorithm detected. Switch seasons to see places move into or out of the center.</p>
+  <div class="chips" id="chips" role="group" aria-label="Season"></div>
+  <div class="panel" id="net"><div class="hint">hover to highlight · drag to move</div></div>
+</section>
+
+<section>
+  <div class="eyebrow">4 · So what</div>
+  <h2>Business takeaways</h2>
+  <div class="findings">
+    <div class="find"><h3>People talk about a season months before it</h3><p>Autumn-leaves talk is about as high in summer (1.6×) as in autumn (1.7×). Sakura talk peaks in winter (1.3×), before spring itself (1.1×). People ask about a season 2–3 months before it.</p><div class="act">→ Start promoting autumn trips in June–July and sakura trips in December–January, not when the season begins.</div></div>
+    <div class="find"><h3>Winter means Hokkaido and driving</h3><p>Hokkaido (2.1×), Sapporo (2.3×), snow (2.6×), renting a car (2.0×) and the JR Pass (2.0×) all peak in winter. Many questions are about driving on snow and how to get around.</p><div class="act">→ For a travel agency: sell Hokkaido packages that include a car with snow tyres, or a guided driving route.</div></div>
+    <div class="find"><h3>Summer is the off-season for travel, but Tokyo and onsen are discussed most</h3><p>JNTO shows August is the lowest month for Thai visitors. Even so, Tokyo (1.5×), Nagoya (2.1×) and onsen (1.6×) are mentioned most in summer.</p><div class="act">→ Offer off-season Tokyo and onsen deals when flights and hotels are cheaper.</div></div>
+    <div class="find"><h3>Cost questions come up in every season</h3><p>"Budget/yen" (336 mentions) and "hotel" (239) are the two largest topics, and they stay near 1.0× in every season. Cost is a concern all year.</p><div class="act">→ Content that compares real costs ("a 7-day Osaka trip for ฿35,000") fits how Pantip users plan.</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Method &amp; limits</div>
+  <ul class="note">
+    <li><b>Pantip:</b> the 50 most recent threads from each of about 15 Japan tags (Tokyo, Osaka, Kyoto, Hokkaido, Sapporo, Fukuoka, JR Pass, เที่ยวญี่ปุ่น and others), plus every comment under them. Threads only about anime, Japanese food in Thailand, or Thais living in Japan were left out.</li>
+    <li><b>Uneven coverage:</b> the busiest tags (the main Japan tag, Tokyo) only reach back a few weeks or months, so Oct–Nov 2026 has far more data. Those months are shaded in chart 1 and left out of the season tables.</li>
+    <li><b>Places and topics:</b> detected with lists of Thai and English spellings. Other words were split with PyThaiNLP (newmm), and filler words were removed.</li>
+    <li><b>JNTO:</b> official monthly counts of visitors from Thailand (the 訪日外客数 spreadsheet). The 2026 figures are provisional.</li>
+    <li>This shows patterns in recent tagged threads. It is not a random sample of Pantip, so it can't measure market share.</li>
+  </ul>
+</section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const D = __DATA__;
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const fm=m=>MN[+m.slice(5)-1]+" ’"+m.slice(2,4);
+const SEAS=["Winter","Spring","Summer","Autumn"], SMON={Winter:"Dec–Feb",Spring:"Mar–May",Summer:"Jun–Aug",Autumn:"Sep–Nov"};
+
+const totPosts=D.volume.topic.reduce((a,b)=>a+b,0)+D.volume.comment.reduce((a,b)=>a+b,0);
+document.getElementById("stats").innerHTML=`<div><b>${D.n_threads}</b>threads</div><div><b>${totPosts.toLocaleString()}</b>posts + comments</div><div><b>${D.months.length}</b>months</div><div><b>${Object.values(D.arrivals).filter((v,i,a)=>true).length}</b>months of JNTO data</div>`;
+
+function chart1(){
+  const el=document.getElementById("c1"); el.innerHTML="";
+  const W=el.clientWidth||900,H=300,m={t:16,r:44,b:28,l:48};
+  const months=D.months, x=d3.scaleBand(months,[m.l,W-m.r]).padding(.2);
+  const arr=months.map(k=>D.arrivals[k]??null), post=months.map((k,i)=>D.volume.topic[i]+D.volume.comment[i]);
+  const yA=d3.scaleLinear([0,d3.max(arr)]).nice().range([H-m.b,m.t]), yP=d3.scaleLinear([0,d3.max(post)]).nice().range([H-m.b,m.t]);
+  const svg=d3.select(el).append("svg").attr("viewBox",`0 0 ${W} ${H}`).attr("width","100%");
+  const fi=months.findIndex(k=>k>D.full_end);
+  if(fi>=0) svg.append("rect").attr("x",x(months[fi])-2).attr("y",m.t).attr("width",W-m.r-x(months[fi])+2).attr("height",H-m.b-m.t).attr("fill",css("--line")).attr("opacity",.6);
+  if(fi>=0) svg.append("text").attr("x",x(months[fi])+2).attr("y",m.t+12).text("over-sampled");
+  yA.ticks(4).forEach(t=>{svg.append("line").attr("x1",m.l).attr("x2",W-m.r).attr("y1",yA(t)).attr("y2",yA(t)).attr("stroke",css("--line")).attr("stroke-dasharray","2 3");svg.append("text").attr("x",m.l-6).attr("y",yA(t)+4).attr("text-anchor","end").text(t>=1000?(t/1000)+"k":t);});
+  yP.ticks(4).forEach(t=>svg.append("text").attr("x",W-m.r+6).attr("y",yP(t)+4).style("fill",css("--beni")).text(t));
+  svg.selectAll(null).data(arr).join("rect").filter(d=>d!=null).attr("x",(d,i)=>x(months[i])).attr("width",x.bandwidth()).attr("y",d=>yA(d)).attr("height",d=>H-m.b-yA(d)).attr("rx",2).attr("fill",css("--ai")).attr("fill-opacity",.75).append("title").text((d,i)=>`${fm(months[i])}: ${d.toLocaleString()} Thai visitors`);
+  const ln=d3.line().x((d,i)=>x(months[i])+x.bandwidth()/2).y(d=>yP(d)).curve(d3.curveMonotoneX);
+  svg.append("path").attr("d",ln(post)).attr("fill","none").attr("stroke",css("--beni")).attr("stroke-width",2.4);
+  svg.selectAll(null).data(post).join("circle").attr("cx",(d,i)=>x(months[i])+x.bandwidth()/2).attr("cy",d=>yP(d)).attr("r",2.6).attr("fill",css("--beni")).append("title").text((d,i)=>`${fm(months[i])}: ${d} Pantip posts`);
+  const step=W<560?4:2;
+  months.forEach((k,i)=>{if(i%step===0)svg.append("text").attr("x",x(k)+x.bandwidth()/2).attr("y",H-8).attr("text-anchor","middle").text(fm(k));});
+  document.getElementById("lg1").innerHTML=`<span><i style="background:var(--ai);opacity:.75"></i>Thai visitors to Japan (JNTO, left axis)</span><span><i class="ln" style="background:var(--beni)"></i>Pantip posts + comments (right axis)</span>`;
+}
+const lc=D.lagc; const best=Object.entries(lc).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]))[0];
+document.getElementById("lagnote").innerHTML=`I checked whether Pantip posts move ahead of or behind arrivals by up to 3 months. The strongest relationship is weak (r = ${best[1]} when posts are shifted ${Math.abs(best[0])} months ${best[0]>0?"ahead of":"behind"} arrivals), and the same-month correlation is ${lc["0"]}. Post volume from this sample can't predict visitor numbers. The useful signal is <b>what</b> people talk about in each season, shown below.`;
+
+function heat(id,obj,label,min=8){
+  const nS=D.season_n, nTot=SEAS.reduce((a,s)=>a+(nS[s]||0),0);
+  const rows=Object.entries(obj).map(([k,c])=>{const tot=SEAS.reduce((a,s)=>a+(c[s]||0),0);return{k,tot,idx:SEAS.map(s=>((c[s]||0)/nS[s])/(tot/nTot))};}).filter(r=>r.tot>=min).sort((a,b)=>b.tot-a.tot).slice(0,14);
+  const mx=2.2, col=d3.interpolateRgb(css("--hm0"),css("--hm1"));
+  document.getElementById(id).innerHTML=`<tr><th class="rl">${label}</th>${SEAS.map(s=>`<th><span style="color:var(--s-${s.toLowerCase()})">●</span> ${s}<br><span style="text-transform:none;letter-spacing:0">${SMON[s]}</span></th>`).join("")}<th>n</th></tr>`+
+    rows.map(r=>`<tr><td class="rl">${r.k}</td>${r.idx.map(v=>{const t=Math.min(v,mx)/mx;return`<td style="background:${col(t)};color:${t>.55?"var(--bg)":"var(--fg)"}">${v.toFixed(1)}×</td>`}).join("")}<td class="n">${r.tot}</td></tr>`).join("");
+}
+
+let sim, cur="All";
+function drawNet(key){
+  const el=document.getElementById("net"); d3.select(el).select("svg").remove(); if(sim)sim.stop();
+  const g0=D.graphs[key], W=el.clientWidth, H=el.clientHeight;
+  let links=g0.links.map(d=>({...d})).sort((a,b)=>b.w-a.w);
+  const deg={}; links=links.filter(l=>{const k=(deg[l.source]||0)<4||(deg[l.target]||0)<4; if(k){deg[l.source]=(deg[l.source]||0)+1;deg[l.target]=(deg[l.target]||0)+1;} return k;}).slice(0,260);
+  const used=new Set(links.flatMap(l=>[l.source,l.target]));
+  const nodes=g0.nodes.filter(n=>used.has(n.id)).map(d=>({...d}));
+  const svg=d3.select(el).insert("svg",".hint").attr("viewBox",`0 0 ${W} ${H}`);
+  const r=d3.scaleSqrt([0,d3.max(nodes,d=>d.n)],[3,W<560?15:22]), lw=d3.scaleLinear([0,d3.max(links,d=>d.w)],[.4,5]);
+  const pal=["--ai","--beni","--matsu","--kin","--sakura","--ink"], col=c=>css(pal[c%pal.length]);
+  const L=svg.append("g").selectAll("line").data(links).join("line").attr("stroke",css("--muted")).attr("stroke-opacity",.2).attr("stroke-width",d=>lw(d.w));
+  const N=svg.append("g").selectAll("g").data(nodes).join("g").attr("class","node");
+  N.each(function(d){const g=d3.select(this),s=r(d.n);
+    if(d.t==="place") g.append("rect").attr("x",-s).attr("y",-s).attr("width",2*s).attr("height",2*s).attr("rx",2);
+    else if(d.t==="theme") g.append("rect").attr("x",-s*.8).attr("y",-s*.8).attr("width",1.6*s).attr("height",1.6*s).attr("transform","rotate(45)");
+    else g.append("circle").attr("r",s*.8);
+    g.select(":first-child").attr("fill",col(d.c)).attr("fill-opacity",d.t==="word"?.55:.95).attr("stroke",d.t==="word"?"none":css("--fg")).attr("stroke-width",1.2);
+    g.append("text").text(d.id.replace(/^[@#]/,"")).attr("x",s+3).attr("y",4).style("font-size",d.t==="word"?"11px":"13px").style("font-weight",d.t==="word"?400:600).style("fill",d.t==="word"?css("--muted"):css("--fg"));
+    g.append("title").text(`${d.id.replace(/^[@#]/,"")} — ${d.n} posts`);});
+  const adj=new Set(links.map(l=>l.source+"|"+l.target));
+  N.on("mouseenter",(e,d)=>{N.style("opacity",o=>o===d||adj.has(d.id+"|"+o.id)||adj.has(o.id+"|"+d.id)?1:.12);L.attr("stroke-opacity",l=>l.source===d||l.target===d?.7:.03);}).on("mouseleave",()=>{N.style("opacity",1);L.attr("stroke-opacity",.2);});
+  N.call(d3.drag().on("start",(e,d)=>{if(!e.active)sim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y;}).on("drag",(e,d)=>{d.fx=e.x;d.fy=e.y;}).on("end",(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=d.fy=null;}));
+  const mw=d3.max(links,k=>k.w);
+  sim=d3.forceSimulation(nodes).force("link",d3.forceLink(links).id(d=>d.id).strength(l=>.03+.35*l.w/mw)).force("charge",d3.forceManyBody().strength(d=>d.t==="word"?-90:-260))
+    .force("collide",d3.forceCollide(d=>r(d.n)+8)).force("x",d3.forceX(W/2).strength(.06)).force("y",d3.forceY(H/2).strength(.08))
+    .on("tick",()=>{nodes.forEach(d=>{d.x=Math.max(20,Math.min(W-80,d.x));d.y=Math.max(18,Math.min(H-26,d.y));});L.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);N.attr("transform",d=>`translate(${d.x},${d.y})`);});
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){sim.stop();for(let i=0;i<300;i++)sim.tick();sim.on("tick")();}
+}
+const chips=document.getElementById("chips");
+["All",...SEAS].forEach(k=>{const b=document.createElement("button");b.id="s-"+k;b.innerHTML=(k==="All"?"":`<i style="background:var(--s-${k.toLowerCase()})"></i>`)+(k==="All"?"All seasons":`${k} · ${SMON[k]}`);b.setAttribute("aria-pressed",k===cur);b.onclick=()=>{cur=k;chips.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));drawNet(k);};chips.append(b);});
+
+function all(){chart1();heat("hmP",D.place_season,"Place");heat("hmT",D.theme_season,"Topic");drawNet(cur);}
+all();
+let rt; addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{chart1();drawNet(cur);},200);});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",all);
+</script>
