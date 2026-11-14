@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where do Thai travellers pair places in Japan? — Pantip social-listening graph</title>
+<style>
+:root{
+  color-scheme:light;
+  --surface-1:#fcfcfb; --surface-2:#f3f3f0; --line:#dcdbd5;
+  --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#7d7c76;
+  --c0:#2a78d6; --c1:#eb6834; --c2:#1baf7a; --c3:#6250d6; --cx:#9c9b94;
+  --seq:#3987e5; --edge:#7d7c76; --accent:#2a78d6;
+}
+@media (prefers-color-scheme:dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme:dark;
+    --surface-1:#1a1a19; --surface-2:#242423; --line:#3a3a37;
+    --text-primary:#f0efec; --text-secondary:#c3c2b7; --text-muted:#8c8b84;
+    --c0:#3987e5; --c1:#d95926; --c2:#199e70; --c3:#9085e9; --cx:#77766f;
+    --seq:#3987e5; --edge:#8c8b84; --accent:#3987e5;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --surface-1:#1a1a19; --surface-2:#242423; --line:#3a3a37;
+  --text-primary:#f0efec; --text-secondary:#c3c2b7; --text-muted:#8c8b84;
+  --c0:#3987e5; --c1:#d95926; --c2:#199e70; --c3:#9085e9; --cx:#77766f;
+  --seq:#3987e5; --edge:#8c8b84; --accent:#3987e5;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-1);color:var(--text-primary);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Thai",sans-serif}
+header{padding:28px 28px 8px;max-width:1280px;margin:0 auto}
+h1{font-size:26px;line-height:1.2;margin:0 0 6px;letter-spacing:-.01em}
+.sub{color:var(--text-secondary);max-width:860px;margin:0 0 14px}
+.facts{display:flex;flex-wrap:wrap;gap:10px 28px;margin:10px 0 0;padding:0;list-style:none;color:var(--text-secondary);font-size:13px}
+.facts b{color:var(--text-primary);font-size:20px;font-weight:650;display:block;line-height:1.1}
+.caveat{font-size:12.5px;color:var(--text-muted);max-width:900px;margin:10px 0 0}
+main{max-width:1280px;margin:0 auto;padding:8px 28px 40px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:12px}
+.ctl{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ctl>span{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-right:2px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button,.chip{font:inherit;font-size:13px;background:transparent;color:var(--text-secondary);border:0;padding:5px 11px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--text-primary);color:var(--surface-1)}
+.seg button:hover:not([aria-pressed="true"]){background:var(--surface-2)}
+.chip{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12.5px}
+.chip[aria-pressed="true"]{background:var(--surface-2);color:var(--text-primary);border-color:var(--text-muted)}
+.chip.off{opacity:.45}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}
+@media(max-width:980px){.layout{grid-template-columns:1fr}}
+.stage{position:relative;background:var(--surface-1);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;padding:10px 14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--text-secondary)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.hint{position:absolute;left:12px;top:10px;font-size:12px;color:var(--text-muted);pointer-events:none}
+.thin{position:absolute;right:12px;top:10px;font-size:12px;color:var(--text-secondary);background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:3px 8px;display:none}
+.edge{stroke:var(--edge);stroke-linecap:round}
+.node circle{stroke:var(--surface-1);stroke-width:2;cursor:pointer;transition:opacity .15s}
+.node text{font-size:11.5px;fill:var(--text-primary);paint-order:stroke;stroke:var(--surface-1);stroke-width:3px;stroke-linejoin:round;pointer-events:none}
+.node.dim circle{opacity:.18}.node.dim text{opacity:.25}
+.edge.dim{opacity:.06!important}
+.node.sel circle{stroke:var(--text-primary);stroke-width:3}
+.tip{position:fixed;pointer-events:none;z-index:9;background:var(--surface-1);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:12.5px;box-shadow:0 4px 18px rgba(0,0,0,.14);display:none;max-width:260px}
+.tip b{font-size:15px}
+.panel{background:var(--surface-1);border:1px solid var(--line);border-radius:12px;padding:16px 18px;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+.panel h2{font-size:20px;margin:0}
+.panel h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin:18px 0 6px;font-weight:600}
+.panel .meta{color:var(--text-secondary);font-size:13px;margin:2px 0 8px}
+.empty{color:var(--text-secondary);font-size:14px}
+.kpis{display:flex;gap:20px}.kpis div{font-size:12px;color:var(--text-secondary)}.kpis b{display:block;font-size:22px;color:var(--text-primary);line-height:1.1}
+.row{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:13.5px}
+.row button{all:unset;cursor:pointer;color:var(--text-primary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row button:hover{text-decoration:underline}.row button:focus-visible{outline:2px solid var(--accent)}
+.bar{height:8px;border-radius:0 4px 4px 0;background:var(--seq);min-width:2px}
+.num{color:var(--text-secondary);font-variant-numeric:tabular-nums;font-size:12.5px;min-width:48px;text-align:right}
+.seas{display:grid;grid-template-columns:64px 1fr 44px;gap:3px 8px;align-items:center;font-size:12.5px;color:var(--text-secondary)}
+.seas .bar{background:var(--seq)}.seas .cur{font-weight:650;color:var(--text-primary)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}.tagc{border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:12.5px;color:var(--text-secondary)}.tagc b{color:var(--text-primary);font-weight:600}
+.th a{color:var(--text-primary);text-decoration:none;display:block;line-height:1.35}.th a:hover{text-decoration:underline}
+.th small{color:var(--text-muted)}.th li{margin:0 0 9px;list-style:none}.th ul{padding:0;margin:0}
+.tablewrap{display:none;margin-top:14px;border:1px solid var(--line);border-radius:12px;overflow:auto;max-height:420px}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:6px 12px;border-bottom:1px solid var(--line)}th{position:sticky;top:0;background:var(--surface-2);font-weight:600}td.n{font-variant-numeric:tabular-nums;text-align:right}
+footer{max-width:1280px;margin:0 auto;padding:0 28px 40px;color:var(--text-muted);font-size:12.5px}
+</style>
+</head>
+<body data-graph>
+<header>
+  <h1>Where do Thai travellers pair places in Japan?</h1>
+  <p class="sub">A social-listening graph built from Pantip travel threads. Two places are linked when the same thread discusses both. Click a place to see where the conversation leads, what people talk about most, and the threads behind it.</p>
+  <ul class="facts" id="facts"></ul>
+  <p class="caveat">Pantip shows what people <em>discuss together</em>, not who actually travelled. Links are co-mentions, not causal influence. Place matching uses an alias list, so a few false matches are possible.</p>
+</header>
+<main>
+  <div class="controls" role="group" aria-label="Filters">
+    <div class="ctl"><span>Level</span><div class="seg" id="mode">
+      <button data-v="city" aria-pressed="true">Cities &amp; regions</button><button data-v="lm" aria-pressed="false">Landmarks</button></div></div>
+    <div class="ctl"><span>Season</span><div class="seg" id="season"></div></div>
+    <div class="ctl" id="typesCtl" style="display:none"><span>Landmark type</span><div id="types" class="chips"></div></div>
+    <div class="ctl"><span>View</span><div class="seg" id="view"><button data-v="graph" aria-pressed="true">Graph</button><button data-v="table" aria-pressed="false">Table</button></div></div>
+  </div>
+  <div class="layout">
+    <div>
+      <div class="stage">
+        <div class="hint">Click a node · drag to move · node size = threads</div>
+        <div class="thin" id="thin"></div>
+        <svg id="svg" viewBox="0 0 900 640" role="img" aria-label="Network of Japanese places co-mentioned in Pantip threads"></svg>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="tablewrap" id="tablewrap"><table id="tbl"></table></div>
+    </div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </div>
+</main>
+<footer id="foot"></footer>
+<div class="tip" id="tip"></div>
+
+<script>
+const D = /*__DATA__*/null;
+</script>
+<script>
+(() => {
+"use strict";
+const $ = s => document.querySelector(s);
+const NS = "http://www.w3.org/2000/svg";
+const SEASONS = ["Spring","Summer","Autumn","Winter"];
+const COLORS = ["var(--c0)","var(--c1)","var(--c2)","var(--c3)"];
+const W = 900, H = 640;
+const meta = D.meta, threads = D.threads;
+const cityInfo = Object.fromEntries(D.cities.map(c => [c.id, c]));
+const lmInfo = Object.fromEntries(D.landmarks.map(l => [l.id, l]));
+const allMonths = meta.months.length;
+const monthsFor = s => s === "All" ? allMonths : (meta.season_months[s] || 1);
+
+const state = { mode:"city", season:"All", types:new Set(D.landmarks.map(l => l.type)), sel:null, view:"graph" };
+const el = (tag, attrs = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) { if (k === "class") e.className = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v); }
+  for (const k of kids.flat()) e.append(k instanceof Node ? k : document.createTextNode(String(k)));
+  return e;
+};
+const sv = (tag, attrs = {}) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); return e; };
+const pl = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+const fmt = x => x >= 10 ? x.toFixed(0) : x.toFixed(1);
+
+// ---------- community naming (stable colours: colour follows the entity, never the filter)
+const cityCount = {};
+threads.forEach(t => t.cities.forEach(c => cityCount[c] = (cityCount[c] || 0) + 1));
+const commIds = [...new Set(D.cities.map(c => c.comm).filter(c => c >= 0))].sort((a, b) => a - b);
+const commName = {};
+commIds.forEach(ci => {
+  const top = D.cities.filter(c => c.comm === ci).sort((a, b) => (cityCount[b.id] || 0) - (cityCount[a.id] || 0));
+  commName[ci] = top.slice(0, 2).map(c => c.id.split("/")[0]).join(" · ");
+});
+const colorOfComm = ci => ci >= 0 && ci < 4 ? COLORS[ci] : "var(--cx)";
+const commOf = (id, mode) => mode === "city" ? (cityInfo[id] || {}).comm : (cityInfo[(lmInfo[id] || {}).parent] || {}).comm;
+
+// ---------- data slice for current filters
+function slice() {
+  const key = state.mode === "city" ? "cities" : "lms";
+  const ts = threads.filter(t => state.season === "All" || t.season === state.season);
+  const minN = state.season === "All" ? meta.min_node : 3, minE = state.season === "All" ? meta.min_edge : 2;
+  const cnt = {};
+  ts.forEach(t => t[key].forEach(n => cnt[n] = (cnt[n] || 0) + 1));
+  const typeOK = id => state.mode === "city" || state.types.has(lmInfo[id].type);
+  const ids = Object.keys(cnt).filter(id => cnt[id] >= minN && typeOK(id));
+  const set = new Set(ids), pair = {};
+  ts.forEach(t => { const v = t[key].filter(x => set.has(x)).sort(); for (let i = 0; i < v.length; i++) for (let j = i + 1; j < v.length; j++) { const k = v[i] + "|" + v[j]; pair[k] = (pair[k] || 0) + 1; } });
+  const edges = Object.entries(pair).filter(([, w]) => w >= minE).map(([k, w]) => { const [a, b] = k.split("|"); return { a, b, w, lift: w / Math.sqrt(cnt[a] * cnt[b]) }; });
+  return { key, ts, cnt, ids, edges, minN, minE };
+}
+
+// ---------- tiny force layout (positions persist across filter changes)
+const pos = {}; let nodes = [], links = [], alpha = 0, raf = 0, drag = null;
+const anchor = ci => { const i = commIds.indexOf(ci); if (i < 0) return { x: W / 2, y: H / 2 };
+  const a = (i / commIds.length) * Math.PI * 2 + Math.PI / 4; return { x: W / 2 + Math.cos(a) * W * .27, y: H / 2 + Math.sin(a) * H * .27 }; };
+// landmarks orbit their parent city's position (from the city layout); cities orbit their cluster anchor
+const anchorFor = id => { if (state.mode === "lm") { const p = pos[(lmInfo[id] || {}).parent]; if (p) return p; } return anchor(commOf(id, state.mode)); };
+function place(id) {
+  if (pos[id]) return pos[id];
+  const an = anchorFor(id);
+  return pos[id] = { x: an.x + (Math.random() - .5) * 140, y: an.y + (Math.random() - .5) * 140, vx: 0, vy: 0 };
+}
+function layout(S) {
+  const maxLift = Math.max(.01, ...S.edges.map(e => e.lift));
+  nodes = S.ids.map(id => ({ id, p: place(id), r: 7 + Math.sqrt(S.cnt[id]) * 2.4 }));
+  const byId = Object.fromEntries(nodes.map(n => [n.id, n]));
+  links = S.edges.map(e => ({ s: byId[e.a], t: byId[e.b], w: e.w, k: e.lift / maxLift, same: state.mode === "lm" ? lmInfo[e.a].parent === lmInfo[e.b].parent : commOf(e.a, state.mode) === commOf(e.b, state.mode) }));
+  // only the strongest links are drawn / pull the layout; the rest appear when their node is selected
+  if (state.mode === "city") links.forEach(l => l.strong = l.k >= .22);
+  else { links.forEach(l => l.strong = false); links.slice().sort((x, y) => y.k - x.k).slice(0, Math.round(nodes.length * 1.25)).forEach(l => l.strong = true); }
+  alpha = 1; cancelAnimationFrame(raf); raf = requestAnimationFrame(step);
+}
+function forces() {
+  const a = alpha;
+  for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+    const A = nodes[i], B = nodes[j]; let dx = B.p.x - A.p.x, dy = B.p.y - A.p.y, d2 = dx * dx + dy * dy || 1, d = Math.sqrt(d2);
+    const f = (state.mode === "lm" ? 13000 : 14000) / d2 * a; dx /= d; dy /= d;
+    if (!A.fixed) { A.p.vx -= dx * f; A.p.vy -= dy * f; } if (!B.fixed) { B.p.vx += dx * f; B.p.vy += dy * f; }
+    const min = A.r + B.r + (state.mode === "lm" ? 26 : 16); if (d < min) { const push = (min - d) * .25; if (!A.fixed) { A.p.vx -= dx * push; A.p.vy -= dy * push; } if (!B.fixed) { B.p.vx += dx * push; B.p.vy += dy * push; } }
+  }
+  links.forEach(l => {
+    if (!l.strong) return;
+    const dx = l.t.p.x - l.s.p.x, dy = l.t.p.y - l.s.p.y, d = Math.sqrt(dx * dx + dy * dy) || 1;
+    const L = l.same ? (state.mode === "lm" ? 45 : 55) + (1 - l.k) * 70 : (state.mode === "lm" ? 160 : 230), f = (d - L) * (l.same ? .02 + .05 * l.k : .006) * a, fx = dx / d * f, fy = dy / d * f;
+    if (!l.s.fixed) { l.s.p.vx += fx; l.s.p.vy += fy; } if (!l.t.fixed) { l.t.p.vx -= fx; l.t.p.vy -= fy; }
+  });
+  nodes.forEach(n => {
+    if (!n.fixed) { const an = anchorFor(n.id); n.p.vx += (an.x - n.p.x) * (state.mode === "lm" ? .03 : .02) * a + (W / 2 - n.p.x) * .002 * a; n.p.vy += (an.y - n.p.y) * (state.mode === "lm" ? .03 : .02) * a + (H / 2 - n.p.y) * .002 * a; n.p.vx *= .8; n.p.vy *= .8; n.p.x += n.p.vx; n.p.y += n.p.vy; }
+    n.p.x = Math.max(n.r + 40, Math.min(W - n.r - 40, n.p.x)); n.p.y = Math.max(n.r + 34, Math.min(H - n.r - 30, n.p.y));
+  });
+  alpha *= .978;
+}
+function step() { forces(); paint(); if (alpha > .012 || drag) raf = requestAnimationFrame(step); }
+
+// ---------- drawing
+const svg = $("#svg"); let gE, gN;
+function paint() {
+  links.forEach(l => { if (l.el) { l.el.setAttribute("x1", l.s.p.x); l.el.setAttribute("y1", l.s.p.y); l.el.setAttribute("x2", l.t.p.x); l.el.setAttribute("y2", l.t.p.y); } });
+  nodes.forEach(n => { if (n.g) n.g.setAttribute("transform", `translate(${n.p.x},${n.p.y})`); });
+}
+function draw(S) {
+  svg.replaceChildren(); gE = sv("g"); gN = sv("g"); svg.append(gE, gN);
+  const maxW = Math.max(1, ...links.map(l => l.w));
+  links.forEach(l => {
+    l.el = sv("line", { class: "edge", "stroke-width": (.8 + 4.2 * Math.sqrt(l.w / maxW)).toFixed(2), opacity: (.16 + .5 * l.k).toFixed(2) });
+    l.el.__l = l; if (!l.strong) l.el.style.display = "none"; gE.append(l.el);
+  });
+  nodes.forEach(n => {
+    const g = sv("g", { class: "node", tabindex: 0, role: "button", "aria-label": `${n.id}: ${pl(S.cnt[n.id], "thread")}` });
+    const c = sv("circle", { r: n.r, fill: colorOfComm(commOf(n.id, state.mode)) });
+    const showLabel = state.mode === "city" || S.cnt[n.id] >= 9;
+    const t = sv("text", { y: n.r + 13, "text-anchor": "middle" }); t.textContent = n.id; t.style.display = showLabel ? "" : "none"; n.label = t;
+    g.append(c, t); n.g = g; g.__n = n; gN.append(g);
+    g.addEventListener("pointerenter", e => tip(e, n, S)); g.addEventListener("pointermove", e => tipMove(e)); g.addEventListener("pointerleave", () => $("#tip").style.display = "none");
+    g.addEventListener("click", () => { if (!g.__moved) select(n.id); });
+    g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(n.id); } });
+    g.addEventListener("pointerdown", e => { g.setPointerCapture(e.pointerId); g.__moved = false; n.fixed = true; drag = n; });
+    g.addEventListener("pointermove", e => { if (drag !== n) return; g.__moved = true; const r = svg.getBoundingClientRect(); n.p.x = (e.clientX - r.left) * W / r.width; n.p.y = (e.clientY - r.top) * H / r.height; n.p.vx = n.p.vy = 0; if (alpha < .15) { alpha = .15; cancelAnimationFrame(raf); raf = requestAnimationFrame(step); } });
+    g.addEventListener("pointerup", () => { n.fixed = false; drag = null; setTimeout(() => g.__moved = false, 0); });
+  });
+  highlight(); paint();
+}
+function highlight() {
+  const sel = state.sel;
+  const nb = new Set(sel ? [sel] : []);
+  links.forEach(l => { if (sel && (l.s.id === sel || l.t.id === sel)) { nb.add(l.s.id); nb.add(l.t.id); } });
+  links.forEach(l => { const on = !!sel && (l.s.id === sel || l.t.id === sel); l.el.classList.toggle("dim", !!sel && !on); l.el.style.display = (l.strong || on) ? "" : "none"; });
+  nodes.forEach(n => { n.g.classList.toggle("dim", !!sel && !nb.has(n.id)); n.g.classList.toggle("sel", n.id === sel); if (sel && nb.has(n.id)) n.label.style.display = ""; });
+}
+function tip(e, n, S) {
+  const t = $("#tip"); t.replaceChildren(el("b", {}, n.id), el("div", {}, `${pl(S.cnt[n.id], "thread")} · ${fmt(S.cnt[n.id] / monthsFor(state.season))} per month`), el("div", { style: "color:var(--text-muted)" }, state.mode === "city" ? (cityInfo[n.id] || {}).region : `${(lmInfo[n.id] || {}).type} · ${(lmInfo[n.id] || {}).parent}`));
+  t.style.display = "block"; tipMove(e);
+}
+function tipMove(e) { const t = $("#tip"); t.style.left = Math.min(innerWidth - 280, e.clientX + 14) + "px"; t.style.top = (e.clientY + 14) + "px"; }
+
+// ---------- side panel
+function termsFor(ts) {
+  const c = {}; ts.forEach(t => new Set(t.terms).forEach(w => c[w] = (c[w] || 0) + 1));
+  return Object.entries(c).filter(([, n]) => n >= 3).map(([w, n]) => [w, n, n * (D.idf[w] || 1)]).sort((a, b) => b[2] - a[2]).slice(0, 10);
+}
+function panel(S) {
+  const P = $("#panel"); P.replaceChildren();
+  const id = state.sel;
+  if (!id || !S.cnt[id]) {
+    state.sel = null;
+    const top = S.ids.slice().sort((a, b) => S.cnt[b] - S.cnt[a]).slice(0, 5);
+    P.append(el("h2", {}, "Pick a place"),
+      el("p", { class: "empty" }, "Click any node to see where the conversation leads from there, what people say about it, and the Pantip threads behind it."),
+      el("h3", {}, "Most discussed right now"),
+      ...top.map(n => el("div", { class: "row" }, el("button", { onclick: () => select(n) }, n), el("span", { class: "num" }, pl(S.cnt[n], "thread")))));
+    return;
+  }
+  const mine = S.ts.filter(t => t[S.key].includes(id));
+  const info = state.mode === "city" ? cityInfo[id] : lmInfo[id];
+  P.append(el("h2", {}, id),
+    el("div", { class: "meta" }, state.mode === "city" ? `${info.region} · ${commName[info.comm] ? commName[info.comm] + " cluster" : ""}` : `${info.type} · in ${info.parent}`),
+    el("div", { class: "kpis" },
+      el("div", {}, el("b", {}, S.cnt[id]), "threads"),
+      el("div", {}, el("b", {}, fmt(S.cnt[id] / monthsFor(state.season))), "per month"),
+      el("div", {}, el("b", {}, Math.round(100 * S.cnt[id] / S.ts.length) + "%"), "of threads")));
+  // seasonal rate (always all four seasons, normalised per observed month)
+  const all = threads.filter(t => t[S.key].includes(id)), by = Object.fromEntries(SEASONS.map(s => [s, all.filter(t => t.season === s).length / (meta.season_months[s] || 1)]));
+  const mx = Math.max(.001, ...Object.values(by));
+  const g = el("div", { class: "seas" });
+  SEASONS.forEach(s => g.append(el("div", { class: state.season === s ? "cur" : "" }, s), el("div", {}, el("div", { class: "bar", style: `width:${(by[s] / mx * 100).toFixed(0)}%` })), el("div", { class: "num" }, fmt(by[s]) + "/mo")));
+  P.append(el("h3", {}, "Seasonal rhythm (threads per month)"), g);
+  // leads to
+  const nb = {}; mine.forEach(t => t[S.key].forEach(o => { if (o !== id && (state.mode === "city" || state.types.has(lmInfo[o].type))) nb[o] = (nb[o] || 0) + 1; }));
+  const nbs = Object.entries(nb).sort((a, b) => b[1] - a[1]).slice(0, 7);
+  P.append(el("h3", {}, "Often discussed together with"));
+  if (!nbs.length) P.append(el("div", { class: "empty" }, "No other place shares a thread with this one under the current filters."));
+  const mxn = nbs.length ? nbs[0][1] : 1;
+  nbs.forEach(([o, n]) => P.append(el("div", { class: "row" }, el("button", { onclick: () => select(o), title: "Open " + o }, o), el("div", { style: "width:70px" }, el("div", { class: "bar", style: `width:${n / mxn * 100}%` })), el("span", { class: "num" }, `${n} · ${Math.round(100 * n / mine.length)}%`))));
+  // landmarks under a city
+  if (state.mode === "city") {
+    const lc = {}; mine.forEach(t => t.lms.forEach(l => { if (lmInfo[l].parent === id) lc[l] = (lc[l] || 0) + 1; }));
+    const ls = Object.entries(lc).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    if (ls.length) { P.append(el("h3", {}, "Landmarks people name here")); ls.forEach(([l, n]) => P.append(el("div", { class: "row" }, el("button", { onclick: () => { state.mode = "lm"; sync(); select(l, true); }, title: "Switch to landmark view" }, l), el("span", { class: "num" }, pl(n, "thread"))))); }
+  }
+  // terms
+  const tm = termsFor(mine);
+  P.append(el("h3", {}, meta.tokenizer === "pythainlp" ? "What people talk about (distinctive words)" : "What people talk about (topic words)"));
+  P.append(tm.length ? el("div", { class: "chips" }, ...tm.map(([w, n]) => el("span", { class: "tagc" }, w + " ", el("b", {}, n)))) : el("div", { class: "empty" }, "Too few threads for stable topic words."));
+  // threads
+  const top = mine.slice().sort((a, b) => b.n - a.n).slice(0, 5);
+  P.append(el("h3", {}, "Most-discussed threads on Pantip"));
+  P.append(el("div", { class: "th" }, el("ul", {}, ...top.map(t => el("li", {}, el("a", { href: "https://pantip.com/topic/" + t.id, target: "_blank", rel: "noopener noreferrer" }, t.title), el("small", {}, `${t.month} · ${t.n} comments · ${t.season}`))))));
+}
+
+// ---------- table view (same data, no hover needed)
+function table(S) {
+  const T = $("#tbl"); T.replaceChildren();
+  T.append(el("thead", {}, el("tr", {}, ...["Place", "Threads", "Per month", "Top partner"].map(h => el("th", {}, h)))));
+  const rows = S.ids.sort((a, b) => S.cnt[b] - S.cnt[a]).map(id => {
+    const best = S.edges.filter(e => e.a === id || e.b === id).sort((x, y) => y.w - x.w)[0];
+    return el("tr", {}, el("td", {}, id), el("td", { class: "n" }, S.cnt[id]), el("td", { class: "n" }, fmt(S.cnt[id] / monthsFor(state.season))), el("td", {}, best ? `${best.a === id ? best.b : best.a} (${best.w})` : "—"));
+  });
+  T.append(el("tbody", {}, ...rows));
+}
+
+// ---------- controls & orchestration
+function legend(S) {
+  const L = $("#legend"); L.replaceChildren();
+  commIds.forEach(ci => L.append(el("span", {}, el("i", { style: `background:${colorOfComm(ci)}` }), commName[ci] + " cluster")));
+  L.append(el("span", { style: "margin-left:auto;color:var(--text-muted)" }, `${S.ids.length} places · ${S.edges.length} links · min ${S.minN} threads per place, ${S.minE} per link`));
+}
+function render() {
+  const S = slice();
+  if (state.sel && !S.cnt[state.sel]) state.sel = null;
+  layout(S); draw(S); legend(S); panel(S); table(S);
+  const n = S.ts.length, th = $("#thin");
+  th.style.display = n < 90 ? "block" : "none"; th.textContent = `Thin data: ${n} threads in this view`;
+}
+function select(id, force) {
+  if (!force && state.sel === id) state.sel = null; else state.sel = id;
+  const S = slice(); highlight(); panel(S);
+  if (force) render();
+}
+function sync() {
+  document.querySelectorAll("#mode button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === state.mode)));
+  document.querySelectorAll("#season button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === state.season)));
+  document.querySelectorAll("#view button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === state.view)));
+  $("#typesCtl").style.display = state.mode === "lm" ? "" : "none";
+  $("#types").querySelectorAll(".chip").forEach(c => { const on = state.types.has(c.dataset.v); c.setAttribute("aria-pressed", String(on)); c.classList.toggle("off", !on); });
+  $("#svg").parentElement.style.display = state.view === "graph" ? "" : "none";
+  $("#tablewrap").style.display = state.view === "table" ? "block" : "none";
+  render();
+}
+function presettle() {
+  const m = state.mode; state.mode = "city";
+  layout(slice()); cancelAnimationFrame(raf);
+  for (let i = 0; i < 260; i++) forces();
+  state.mode = m;
+}
+function init() {
+  presettle();
+  const f = $("#facts"); const nPlaces = D.cities.length + D.landmarks.length;
+  [[meta.threads, "Pantip threads"], [threads.reduce((a, t) => a + t.n, 0).toLocaleString(), "comments"], [`${meta.window[0]} → ${meta.window[1]}`, "window"], [nPlaces, "places tracked (" + D.cities.length + " cities, " + D.landmarks.length + " landmarks)"]]
+    .forEach(([b, s]) => f.append(el("li", {}, el("b", {}, b), s)));
+  const sg = $("#season"); ["All", ...SEASONS].forEach(s => sg.append(el("button", { "data-v": s, "aria-pressed": String(s === "All"), onclick: () => { state.season = s; sync(); } }, s === "All" ? "All seasons" : s)));
+  $("#mode").querySelectorAll("button").forEach(b => b.addEventListener("click", () => { state.mode = b.dataset.v; state.sel = null; sync(); }));
+  $("#view").querySelectorAll("button").forEach(b => b.addEventListener("click", () => { state.view = b.dataset.v; sync(); }));
+  [...new Set(D.landmarks.map(l => l.type))].sort().forEach(t => $("#types").append(el("button", { class: "chip", "data-v": t, "aria-pressed": "true", onclick: () => { state.types.has(t) ? state.types.delete(t) : state.types.add(t); if (!state.types.size) D.landmarks.forEach(l => state.types.add(l.type)); sync(); } }, t)));
+  $("#foot").textContent = `Season is read from the month named in a thread (title or text), otherwise from its posting month. ` +
+    `Oct–Nov ${meta.cap.months.map(m => m.slice(0, 4))[0]} was over-sampled by the scraper and capped at ${meta.cap.per_month} random threads a month so every season is observed for a similar length of time ` +
+    `(months observed — ${SEASONS.map(s => s + " " + meta.season_months[s]).join(", ")}). Season charts show threads per observed month. Topic words: ${meta.tokenizer}. Data: Pantip tags เที่ยวญี่ปุ่น / ประเทศญี่ปุ่น and related.`;
+  sync();
+}
+init();
+})();
+</script>
+</body>
+</html>
